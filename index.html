@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <!--删除默认的苹果工具栏和菜单栏-->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"/>
+    <link href="loadmorebydrag.css" type="text/css" rel="stylesheet"/>
+    <title>测试</title>
+</head>
+<body>
+    <div class="top">
+        页面导航
+    </div>
+    <div id="wrapper">
+        <div id="scroller">
+            <div id="pullDown">
+                <span class="pullDownIcon icon normal"></span>
+                <span class="pullDownLabel">下拉刷新</span>
+            </div>
+            <div class="news-lists" id="news-list">
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+            </div>
+            <div id="pullUp">
+                <span class="pullUpIcon icon normal"></span>
+                <span class="pullUpLabel">上拉加载更多</span>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        底部导航
+    </div>
+</body>
+<script src="zepto.min.js" type="application/javascript"></script>
+<script src="iscroll.js" type="application/javascript"></script>
+<script>
+    var data,
+        myScroll,
+        pullDownEl,pullDownOffset,
+        pullUpEl,pullUpOffset,
+        generatedCount=0;
+        var $down,$up;
+    function pullDownAction(){
+        $.getJSON('test.json',function(data,state){
+           if(data && data.state==1 && state=='success'){
+                setTimeout(function(){
+                    $('#news-list').html(data.data);
+                     myScroll.refresh();
+                     $downIcon.removeClass('loading');
+                     $down.find('.pullDownLabel').text('下拉刷新');
+                },600);
+            }
+        });
+    }
+
+    function pullUpAction(){
+        $.getJSON('test.json',function(data,state){
+            if(data && data.state==1 && state=='success'){
+                setTimeout(function(){
+                    $('#news-list').append(data.data);
+                    myScroll.refresh();
+                    $upIcon.removeClass('loading');
+                    $up.find('.pullUpLabel').text('上拉加载更多');
+                },600);
+            }
+        });
+    }
+    document.addEventListener('touchmove',function(e){e.preventDefault(),false});
+    document.addEventListener('DOMContentLoaded',loaded,false);
+
+    function loaded(){
+        $down=$('#pullDown');
+        $up=$('#pullUp');
+        $downIcon=$down.find('.icon');
+        $upIcon=$up.find('.icon');
+        pullDownEl=$down[0];
+        pullDownOffset=pullDownEl.offsetHeight;
+        pullUpEl=$up[0];
+        pullUpOffset=pullUpEl.offsetHeight;
+
+        myScroll=new IScroll('#wrapper',{probeType: 3, mouseWheel: true,vScrollbar:false});
+        myScroll.on("slideDown",function() {
+            if(this.y > 40){
+                if(!$downIcon.hasClass('loading')){
+                    $downIcon.addClass('loading');
+                    $down.find('.pullDownLabel').text('加载中...');
+                    pullDownAction();
+                }
+            }
+        });
+
+        myScroll.on("slideUp",function(){
+            if(this.maxScrollY - this.y > 40){
+                if(!$upIcon.hasClass('loading')){
+                    $upIcon.addClass('loading');
+                    $up.find('.pullUpLabel').text('加载中...');
+                    pullUpAction();
+                   }
+                }
+        });
+
+        myScroll.on("scroll",function(){
+            var y = this.y,
+                maxY = this.maxScrollY - y,
+
+                downHasClass = $downIcon.hasClass("flip"),
+                upHasClass = $upIcon.hasClass("flip");
+            
+            if(y >= 40){
+                !downHasClass && $downIcon.addClass("flip");
+                $down.find('.pullDownLabel').text('释放刷新');
+                return;
+            }else if(y < 40 && y > 0){
+                downHasClass && $downIcon.removeClass("flip");
+                $down.find('.pullDownLabel').text('下拉刷新');
+                return "";
+            }
+            
+            if(maxY >= 40){
+                !upHasClass && $upIcon.addClass("flip");
+                 $up.find('.pullUpLabel').text('释放刷新');
+                return;
+            }else if(maxY < 40 && maxY >=0){
+                upHasClass && $upIcon.removeClass("flip");
+                $up.find('.pullUpLabel').text('上拉加载更多');
+                return;
+            }
+        });
+        
+    }
+</script>
+</html>
